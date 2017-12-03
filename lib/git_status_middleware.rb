@@ -24,8 +24,23 @@ class GitStatusMiddleware
 
   def updated_response
     [
-      @response.last[0..-15] + render(error_message: error_message, status: 'hello') + "</body></html>"
+      @response.last[0..-15] + render(error_message: error_message, status: status) + "</body></html>"
     ]
+  end
+
+  def status
+    {
+      branch: branch,
+      revision: revision,
+    }
+  end
+
+  def branch
+    `git rev-parse --abbrev-ref HEAD`.strip
+  end
+
+  def revision
+    `git rev-parse --verify HEAD`.strip
   end
 
   def git_installed?
