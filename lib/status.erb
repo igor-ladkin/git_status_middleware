@@ -23,7 +23,8 @@
   <% if assigns[:error_message] %>
     <p class="alert"><%= assigns[:error_message] %></p>
   <% else %>
-    <p class="branch">Branch: <%= assigns[:status][:branch] %></p>
-    <p class="revision">Revision: <%= assigns[:status][:revision] %></p>
+    <p class="branch">Branch: <%= assigns[:branch] %></p>
+    <p class="revision">Revision: <%= assigns[:revision] %></p>
+    <p class="changes">Changes: <%= assigns[:changes] %></p>
   <% end %>
 </div>
