@@ -10,7 +10,7 @@ class App
 
   def call(env)
     content = render(name: 'John Doe')
-    [200, {"Content-Type" => "text/html"}, [content]]
+    [200, {"Content-Type" => "text/html", "Content-Length" => content.bytesize}, [content]]
   end
 end
 

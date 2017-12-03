@@ -14,15 +14,23 @@ class GitStatusMiddleware
 
   def call(env)
     status, @headers, @response = app.call(env)
-    [status, headers, updated_response]
+    [status, updated_headers, updated_response]
   end
 
   def updated_headers
+    updated_length = headers["Content-Length"] + rendered_widget.bytesize
+    headers.merge("Content-Length" => updated_length)
   end
 
   def updated_response
     [
-      @response.last[0..-15] + git_status.render + "</body></html>"
+      @response.last[0..-15] + rendered_widget + "</body></html>"
     ]
+  end
+
+  private
+
+  def rendered_widget
+    @rendered_widget ||= git_status.render
   end
 end
