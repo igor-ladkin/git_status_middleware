@@ -3,10 +3,11 @@ require "git_status_middleware"
 describe GitStatusMiddleware do
   let(:middleware) { described_class.new(app) }
   let(:original_body) { "<html><body>Hello world!</body></html>" }
+  let(:body_length) { "#{original_body.bytesize}" }
   let(:git_status) { double "GitStatus", render: "<p>Lé git</p>" }
   let(:app) do
     double "Some Application",
-      call: [200, {"Content-Type" => "text/html", "Content-Length" => original_body.bytesize }, [original_body]]
+      call: [200, {"Content-Type" => "text/html", "Content-Length" => body_length }, [original_body]]
   end
 
   let(:env) do
@@ -24,7 +25,7 @@ describe GitStatusMiddleware do
     it "returns the same status code for SUCCESSFUL request" do
       allow(app).to receive(:call)
         .with(env)
-        .and_return([200, {"Content-Type" => "text/html", "Content-Length" => original_body.bytesize }, [original_body]])
+        .and_return([200, {"Content-Type" => "text/html", "Content-Length" => body_length }, [original_body]])
 
       status, _, _ = subject
       expect(status).to eq 200
@@ -33,7 +34,7 @@ describe GitStatusMiddleware do
     it "returns the same status code for UNSUCCESSFUL request" do
       allow(app).to receive(:call)
         .with(env)
-        .and_return([404, {"Content-Type" => "text/html", "Content-Length" => original_body.bytesize }, [original_body]])
+        .and_return([404, {"Content-Type" => "text/html", "Content-Length" => body_length }, [original_body]])
 
       status, _, _ = subject
       expect(status).to eq 404
@@ -50,7 +51,7 @@ describe GitStatusMiddleware do
       allow(middleware).to receive(:git_status).and_return(git_status)
 
       _, headers, _ = subject
-      bytesize_diff = headers["Content-Length"] - original_body.bytesize
+      bytesize_diff = headers["Content-Length"].to_i - body_length.to_i
       expect(bytesize_diff).to eq(14)
     end
   end

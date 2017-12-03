@@ -18,13 +18,13 @@ class GitStatusMiddleware
   end
 
   def updated_headers
-    updated_length = headers["Content-Length"] + rendered_widget.bytesize
-    headers.merge("Content-Length" => updated_length)
+    updated_length = headers["Content-Length"].to_i + rendered_widget.bytesize
+    headers.merge("Content-Length" => updated_length.to_s)
   end
 
   def updated_response
     [
-      @response.last[0..-15] + rendered_widget + "</body></html>"
+      response.last[0..-15] + rendered_widget + "</body></html>"
     ]
   end
 
