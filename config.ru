@@ -9,7 +9,7 @@ class App
      .def_method(self, "render(assigns)", "index.erb")
 
   def call(env)
-    content = render(name: "John Doe")
+    content = render(message: "Hi Bob!")
     [200, {"Content-Type" => "text/html", "Content-Length" => "#{content.bytesize}"}, [content]]
   end
 end
