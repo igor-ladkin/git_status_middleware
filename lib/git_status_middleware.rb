@@ -26,8 +26,10 @@ class GitStatusMiddleware
     if last_response.end_with?("</body></html>")
       last_response.insert(-15, rendered_widget)
     else
-      last_response + rendered_widget
+      last_response << rendered_widget
     end
+
+    response
   end
 
   private

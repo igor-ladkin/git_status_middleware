@@ -35,11 +35,19 @@ class GitStatus
   end
 
   def git_initialized?
-    `git rev-parse --is-inside-work-tree`.start_with?("true")
+    begin
+      `git rev-parse --is-inside-work-tree`.start_with?("true")
+    rescue Errno::ENOENT
+      false
+    end
   end
 
   def status_string
-    `git status -s -uall`.strip
+    begin
+      `git status -s -uall`.strip
+    rescue Errno::ENOENT
+      ''
+    end
   end
 
   private
