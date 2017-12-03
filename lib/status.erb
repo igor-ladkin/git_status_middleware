@@ -1,0 +1,28 @@
+<!-- some weird shit -->
+<style>
+  #git-status {
+    position: fixed;
+    top: 50px;
+    right: 50px;
+
+    width: 250px;
+    min-height: 50px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 10px;
+
+    border: 1px solid black;
+    border-radius: 5px;
+  }
+</style>
+
+<div id="git-status">
+  <% if assigns[:error_message] %>
+    <p class="alert"><%= assigns[:error_message] %></p>
+  <% else %>
+    Everything is good!
+  <% end %>
+</div>

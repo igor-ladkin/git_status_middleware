@@ -2,10 +2,11 @@
 
 require "erb"
 require "rack"
+require_relative "lib/git_status_middleware"
 
 class App
   ERB.new(File.read("index.erb"))
-     .def_method(self, "render(locals)", "index.erb")
+     .def_method(self, "render(assigns)", "index.erb")
 
   def call(env)
     content = render(name: 'John Doe')
@@ -13,4 +14,5 @@ class App
   end
 end
 
+use GitStatusMiddleware
 run App.new
