@@ -23,14 +23,20 @@ class GitStatusMiddleware
   end
 
   def updated_response
-    [
-      response.last[0..-15] + rendered_widget + "</body></html>"
-    ]
+    if last_response.end_with?("</body></html>")
+      last_response.insert(-15, rendered_widget)
+    else
+      last_response + rendered_widget
+    end
   end
 
   private
 
   def rendered_widget
     @rendered_widget ||= git_status.render
+  end
+
+  def last_response
+    response.last
   end
 end

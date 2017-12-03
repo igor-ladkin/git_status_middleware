@@ -4,9 +4,10 @@ class GitStatus
   ERB.new(File.read("lib/status.erb"))
      .def_method(self, "render_with_params(assigns)", "lib/status.erb")
 
-  CHANDED_CODES = ["A ", "D ", " D", "M ", " M"].freeze
+  CHANGED_CODES = ["A ", "D ", " D", "M ", " M"].freeze
   UNTRACKED_CODES = ["??"].freeze
   STAGED_CODES = ["A ", "D ", "M "].freeze
+  EMPTY_CHANGES_MESSAGE = "Nothing yet".freeze
 
   def to_h
     {
@@ -74,7 +75,7 @@ class GitStatus
 
   def change_counts
     {
-      "C" => count_statuses(CHANDED_CODES),
+      "C" => count_statuses(CHANGED_CODES),
       "U" => count_statuses(UNTRACKED_CODES),
       "S" => count_statuses(STAGED_CODES),
     }
@@ -82,7 +83,7 @@ class GitStatus
 
   def formatted_changes
     if change_counts.all? { |_k, count| count == 0 }
-      "Nothing yet"
+      EMPTY_CHANGES_MESSAGE
     else
       change_counts
         .map { |k, v| "#{k}: #{v}" }
