@@ -75,10 +75,9 @@ class GitStatus
   end
 
   def change_statuses
-    @change_statuses ||=
-      status_string
-        .split("\n")
-        .map { |s| s[0..1] }
+    status_string
+      .split("\n")
+      .map { |s| s[0..1] }
   end
 
   def change_counts

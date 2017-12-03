@@ -1,10 +1,6 @@
-require "erb"
 require_relative "git_status"
 
 class GitStatusMiddleware
-  ERB.new(File.read("lib/status.erb"))
-     .def_method(self, "render(assigns)", "lib/status.erb")
-
   attr_reader :app, :git_status, :headers, :response
 
   def initialize(app)
@@ -35,7 +31,7 @@ class GitStatusMiddleware
   private
 
   def rendered_widget
-    @rendered_widget ||= git_status.render
+    @rendered_widget = git_status.render
   end
 
   def last_response
