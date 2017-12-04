@@ -44,7 +44,7 @@ class GitStatus
 
   def status_string
     begin
-      `git status -s -uall`.strip
+      `git status -s -uall`.rstrip
     rescue Errno::ENOENT
       ''
     end
