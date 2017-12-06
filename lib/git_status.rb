@@ -1,13 +1,16 @@
+require "ostruct"
 require "erb"
 
 class GitStatus
-  ERB.new(File.read("lib/status.erb"))
-     .def_method(self, "render_with_params(assigns)", "lib/status.erb")
+  TEMPLATE_PATH = File.expand_path("template.erb", File.dirname(__FILE__))
 
-  CHANGED_CODES = ["A ", "D ", " D", "M ", " M"].freeze
+  MODIFIED_CODES = ["A ", "D ", " D", "M ", " M"].freeze
   UNTRACKED_CODES = ["??"].freeze
   STAGED_CODES = ["A ", "D ", "M "].freeze
-  EMPTY_CHANGES_MESSAGE = "Nothing yet".freeze
+
+  def self.to_html(vars)
+    ERB.new(File.read(TEMPLATE_PATH)).result(OpenStruct.new(vars).instance_eval { binding })
+  end
 
   def to_h
     {
@@ -19,7 +22,7 @@ class GitStatus
   end
 
   def to_html
-    render_with_params to_h
+    self.class.to_html(to_h)
   end
 
   def git_configured?
@@ -55,23 +58,28 @@ class GitStatus
   def error_message
     case
     when !git_installed? then "Git is not installed. Install!"
-    when !git_initialized? then "Git is not initialized. Initialize!"
+    when !git_initialized? then "Git repository is not initialized. Initialize!"
     end
   end
 
   def branch
     return unless git_configured?
-    `git rev-parse --abbrev-ref HEAD`.strip
+    `git rev-parse --abbrev-ref HEAD`.strip[0..25]
   end
 
   def revision
     return unless git_configured?
-    `git rev-parse --verify HEAD`.strip[0..10]
+    `git rev-parse --verify HEAD`.strip[0..25]
   end
 
   def changes
     return unless git_configured?
-    formatted_changes
+
+    {
+      modified: count_statuses(MODIFIED_CODES),
+      untracked: count_statuses(UNTRACKED_CODES),
+      staged: count_statuses(STAGED_CODES),
+    }
   end
 
   def change_statuses
@@ -80,26 +88,7 @@ class GitStatus
       .map { |s| s[0..1] }
   end
 
-  def change_counts
-    {
-      "C" => count_statuses(CHANGED_CODES),
-      "U" => count_statuses(UNTRACKED_CODES),
-      "S" => count_statuses(STAGED_CODES),
-    }
-  end
-
-  def formatted_changes
-    if change_counts.all? { |_k, count| count == 0 }
-      EMPTY_CHANGES_MESSAGE
-    else
-      change_counts
-        .map { |k, v| "#{k}: #{v}" }
-        .join(", ")
-    end
-  end
-
   def count_statuses(codes)
     change_statuses.count { |status| codes.include?(status) }
   end
-
 end

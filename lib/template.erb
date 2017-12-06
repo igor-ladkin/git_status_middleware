@@ -1,0 +1,59 @@
+<style>
+  .git-status {
+    position: fixed;
+    top: 0;
+    right: 0;
+    min-width: 150px;
+    max-width: 250px;
+    min-height: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 5px;
+    font-family: monospace;
+    border-left: 1px solid rgba(122,120,122,1);
+    border-bottom: 1px solid rgba(122,120,122,1);
+    border-radius: 0 0 0 5px;
+    -webkit-box-shadow: -1px 1px 1px 0px rgba(184,180,184,1);
+    -moz-box-shadow: -1px 1px 1px 0px rgba(184,180,184,1);
+    box-shadow: -1px 1px 1px 0px rgba(184,180,184,1);
+  }
+
+  .changes {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .branch {
+    color: tomato;
+  }
+
+  .revision {
+    color: darkblue;
+  }
+
+  .change {
+    display: inline-flex;
+    flex-direction: column;
+    text-transform: capitalize;
+    padding: 0 2px;
+    align-items: center;
+  }
+</style>
+
+<div class="git-status">
+  <% if error_message %>
+    <div class="alert"><%= error_message %></div>
+  <% else %>
+    <div class="branch"><%= branch %></div>
+    <div class="revision"><%= revision %></div>
+    <div class="changes">
+      <% changes.each do |label, count| %>
+        <div class="change">
+          <div class="count"><%= count %></div>
+          <div class="label"><%= label %></div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

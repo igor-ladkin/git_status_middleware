@@ -4,7 +4,7 @@ describe GitStatusMiddleware do
   let(:middleware) { described_class.new(app) }
   let(:original_body) { "<html><body>Hello world!</body></html>" }
   let(:body_length) { "#{original_body.bytesize}" }
-  let(:git_status) { instance_double GitStatus, render: "<p>Lé git</p>" }
+  let(:git_status) { instance_double GitStatus, to_html: "<p>Lé git</p>" }
   let(:app) do
     double "Some Application",
       call: [200, {"Content-Type" => "text/html", "Content-Length" => body_length }, [original_body]]

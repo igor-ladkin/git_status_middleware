@@ -20,7 +20,7 @@ describe GitStatus do
 
     it "includes initialization instruction when git is not initialized" do
       allow(git_status).to receive(:git_initialized?).and_return(false)
-      expect(subject[:error_message]).to include("Git is not initialized. Initialize!")
+      expect(subject[:error_message]).to include("Git repository is not initialized. Initialize!")
     end
 
     context "when git is not set up" do
@@ -46,7 +46,7 @@ describe GitStatus do
         expect(subject[:revision]).to be_truthy
       end
 
-      it "includes formatted string for changes for first example", :aggregate_failures do
+      it "includes change counts for first example", :aggregate_failures do
         status_string =
           <<~EOF
            D config.ru
@@ -58,12 +58,10 @@ describe GitStatus do
           EOF
 
         allow(git_status).to receive(:status_string).and_return(status_string)
-
-        expect(subject[:changes]).to match(/C: (\d+), U: (\d+), S: (\d+)/)
-        expect(subject[:changes]).to eq("C: 4, U: 2, S: 2")
+        expect(subject[:changes]).to match(modified: 4, untracked: 2, staged: 2)
       end
 
-      it "includes formatted string for changes for second example", :aggregate_failures do
+      it "includes change counts for second example", :aggregate_failures do
         status_string =
           <<~EOF
            D config.ru
@@ -72,14 +70,12 @@ describe GitStatus do
           EOF
 
         allow(git_status).to receive(:status_string).and_return(status_string)
-
-        expect(subject[:changes]).to match(/C: (\d+), U: (\d+), S: (\d+)/)
-        expect(subject[:changes]).to eq("C: 3, U: 0, S: 1")
+        expect(subject[:changes]).to match(modified: 3, untracked: 0, staged: 1)
       end
 
-      it "includes 'Nothing yet' as changes for empty changes" do
+      it "includes zero change counts for empty changes" do
         allow(git_status).to receive(:status_string).and_return("")
-        expect(subject[:changes]).to eq("Nothing yet")
+        expect(subject[:changes]).to match(modified: 0, untracked: 0, staged: 0)
       end
     end
   end

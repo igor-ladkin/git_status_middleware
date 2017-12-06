@@ -22,6 +22,12 @@ class GitStatusMiddleware
     full_response = response.join("")
     position = full_response.match("<body>")&.end(0) || 0
 
-    [full_response.insert(position, git_status.to_html)]
+    [full_response.insert(position, rendered_widget)]
+  end
+
+  private
+
+  def rendered_widget
+    git_status.to_html
   end
 end
