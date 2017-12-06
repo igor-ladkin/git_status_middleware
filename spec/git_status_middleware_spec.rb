@@ -31,15 +31,6 @@ describe GitStatusMiddleware do
       expect(status).to eq 200
     end
 
-    it "returns the same status code for UNSUCCESSFUL request" do
-      expect(app).to receive(:call)
-        .with(env)
-        .and_return([404, {"Content-Type" => "text/html", "Content-Length" => body_length }, [original_body]])
-
-      status, _, _ = subject
-      expect(status).to eq 404
-    end
-
     it "appends git status widget to the response body" do
       allow(middleware).to receive(:git_status).and_return(git_status)
 
@@ -53,6 +44,25 @@ describe GitStatusMiddleware do
       _, headers, _ = subject
       bytesize_diff = headers["Content-Length"].to_i - body_length.to_i
       expect(bytesize_diff).to eq(14)
+    end
+
+    it "returns the same status code and does not append widget for UNSUCCESSFUL request", :aggregate_failures do
+      expect(app).to receive(:call)
+        .with(env)
+        .and_return([404, {"Content-Type" => "text/html", "Content-Length" => body_length }, [original_body]])
+
+      status, _, response = subject
+      expect(status).to eq 404
+      expect(response.join "").not_to include("Lé git")
+    end
+
+    it "does not include git status widget if the request content type is different from HTML" do
+      expect(app).to receive(:call)
+        .with(env)
+        .and_return([204, {"Content-Type" => "application/json", "Content-Length" => "0" }, [""]])
+
+      _, _, response = subject
+      expect(response.join "").not_to include("Lé git")
     end
   end
 end
