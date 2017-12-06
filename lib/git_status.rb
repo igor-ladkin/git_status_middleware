@@ -13,11 +13,12 @@ class GitStatus
   end
 
   def to_h
+    return { error_message: error_message } unless git_installed? && git_initialized?
+
     {
       branch: branch,
       revision: revision,
       changes: changes,
-      error_message: error_message,
     }
   end
 
@@ -25,13 +26,10 @@ class GitStatus
     self.class.to_html(to_h)
   end
 
-  def git_configured?
-    git_installed? && git_initialized?
-  end
-
   def git_installed?
     begin
       `git --version`
+      true
     rescue Errno::ENOENT
       false
     end
@@ -63,18 +61,14 @@ class GitStatus
   end
 
   def branch
-    return unless git_configured?
     `git rev-parse --abbrev-ref HEAD`.strip[0..25]
   end
 
   def revision
-    return unless git_configured?
-    `git rev-parse --verify HEAD`.strip[0..25]
+    `git rev-parse --default HEAD`.strip[0..25]
   end
 
   def changes
-    return unless git_configured?
-
     {
       modified: count_statuses(MODIFIED_CODES),
       untracked: count_statuses(UNTRACKED_CODES),
