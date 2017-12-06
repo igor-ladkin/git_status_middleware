@@ -4,7 +4,7 @@ describe GitStatusMiddleware do
   let(:middleware) { described_class.new(app) }
   let(:original_body) { "<html><body>Hello world!</body></html>" }
   let(:body_length) { "#{original_body.bytesize}" }
-  let(:git_status) { double "GitStatus", render: "<p>Lé git</p>" }
+  let(:git_status) { instance_double GitStatus, render: "<p>Lé git</p>" }
   let(:app) do
     double "Some Application",
       call: [200, {"Content-Type" => "text/html", "Content-Length" => body_length }, [original_body]]
@@ -23,7 +23,7 @@ describe GitStatusMiddleware do
     subject { middleware.call(env) }
 
     it "returns the same status code for SUCCESSFUL request" do
-      allow(app).to receive(:call)
+      expect(app).to receive(:call)
         .with(env)
         .and_return([200, {"Content-Type" => "text/html", "Content-Length" => body_length }, [original_body]])
 
@@ -32,7 +32,7 @@ describe GitStatusMiddleware do
     end
 
     it "returns the same status code for UNSUCCESSFUL request" do
-      allow(app).to receive(:call)
+      expect(app).to receive(:call)
         .with(env)
         .and_return([404, {"Content-Type" => "text/html", "Content-Length" => body_length }, [original_body]])
 

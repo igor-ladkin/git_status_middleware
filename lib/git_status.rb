@@ -18,8 +18,8 @@ class GitStatus
     }
   end
 
-  def render
-    render_with_params self.to_h
+  def to_html
+    render_with_params to_h
   end
 
   def git_configured?

@@ -19,22 +19,9 @@ class GitStatusMiddleware
   end
 
   def updated_response
-    if last_response.end_with?("</body></html>")
-      last_response.insert(-15, rendered_widget)
-    else
-      last_response << rendered_widget
-    end
+    full_response = response.join("")
+    position = full_response.match("<body>")&.end(0) || 0
 
-    response
-  end
-
-  private
-
-  def rendered_widget
-    @rendered_widget = git_status.render
-  end
-
-  def last_response
-    response.last
+    [full_response.insert(position, git_status.to_html)]
   end
 end
